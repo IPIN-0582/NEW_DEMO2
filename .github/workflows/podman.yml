@@ -1,0 +1,38 @@
+name: CI/CD for Podman on Localhost
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build_and_deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Environment Variables
+        run: |
+          echo 'export PATH=$PATH:~/.local/bin' >> $GITHUB_ENV
+
+      - name: List files for debugging
+        run: |
+          echo "Current workspace: $GITHUB_WORKSPACE"
+          ls -la $GITHUB_WORKSPACE
+
+      - name: Build Docker image
+        run: |
+          cd $GITHUB_WORKSPACE
+          podman build -t localhost/todo-list-app:latest .
+
+      - name: Deploy to localhost
+        run: |
+          export PATH=$PATH:~/.local/bin
+          cd $GITHUB_WORKSPACE
+          # Ensure the old containers are stopped and removed
+          podman-compose down --remove-orphans || true
+          # Bring up the services with the latest image
+          podman-compose up -d

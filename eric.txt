@@ -1,5 +1,0 @@
-<<<<<<< HEAD
-Nhanh moi eric
-=======
-them eric.txt
->>>>>>> eric
